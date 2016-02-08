@@ -8,7 +8,7 @@
 #include <QVector>
 #include <vector>
 #include <QHash>
-#include <QT>
+#include <Qt>
 #include <QDebug>
 
 class BaseData : public QObject {   // base data structure for most models
@@ -35,7 +35,9 @@ public:
     explicit SingleModel(QObject *parent = 0);
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
+	bool setData( const QModelIndex& a_rIndex, const QVariant& a_rValue, int a_iRole );
     QHash<int, QByteArray> roleNames() const;
+	QModelIndex CreateIndex( int a_iRow, int a_iColumn ){ return createIndex( a_iRow, a_iColumn );}
 
     SingleModel(const SingleModel &m);
     SingleModel& operator =(const SingleModel &m);
@@ -47,8 +49,8 @@ public:
 class MultiModel : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(SingleModel model1 READ model1 WRITE setModel1 NOTIFY model1Changed)
-    Q_PROPERTY(SingleModel model2 READ model2 WRITE setModel2 NOTIFY model2Changed)
+	Q_PROPERTY(SingleModel* model1 READ model1 WRITE setModel1 NOTIFY model1Changed)
+	Q_PROPERTY(SingleModel* model2 READ model2 WRITE setModel2 NOTIFY model2Changed)
 
 public:
     MultiModel(QObject *parent = 0);
@@ -56,15 +58,15 @@ public:
     MultiModel(const MultiModel &m);
     MultiModel& operator =(const MultiModel &m);
 
-    SingleModel model1() const;
-    void setModel1(const SingleModel &m);
-    SingleModel model2() const;
-    void setModel2(const SingleModel &m);
+	SingleModel* model1() const;
+	void setModel1(SingleModel *m);
+	SingleModel* model2() const;
+	void setModel2( SingleModel *m);
 
-private:
-    SingleModel m_model1, m_model2;
-    void loadModel1();
-    void loadModel2();
+protected:
+	SingleModel *m_model1, *m_model2;
+	Q_INVOKABLE void loadModel1();
+	Q_INVOKABLE void loadModel2();
 
 signals:
     void model1Changed();
